@@ -1,3 +1,5 @@
+import { merge } from 'lodash-es';
+
 export function osmIsInterestingTag(key) {
     return key !== 'attribution' &&
         key !== 'created_by' &&
@@ -58,7 +60,8 @@ export var osmAreaKeysExceptions = {
         station: true,
         traverser: true,
         turntable: true,
-        wash: true
+        wash: true,
+        ventilation_shaft: true
     },
     waterway: {
         dam: true
@@ -123,7 +126,7 @@ export function osmNodeGeometriesForTags(nodeTags) {
     return geometries;
 }
 
-export var osmOneWayTags = {
+export const osmOneWayForwardTags = {
     'aerialway': {
         'chair_lift': true,
         'drag_lift': true,
@@ -137,8 +140,6 @@ export var osmOneWayTags = {
     },
     'conveying': {
         'forward': true,
-        'backward': true,
-        'reversible': true,
     },
     'highway': {
         'motorway': true
@@ -150,6 +151,9 @@ export var osmOneWayTags = {
     'man_made': {
         'goods_conveyor': true,
         'piste:halfpipe': true
+    },
+    'oneway': {
+        'yes': true,
     },
     'piste:type': {
         'downhill': true,
@@ -167,6 +171,7 @@ export var osmOneWayTags = {
         'ditch': true,
         'drain': true,
         'fish_pass': true,
+        'flowline': true,
         'pressurised': true,
         'river': true,
         'spillway': true,
@@ -174,6 +179,28 @@ export var osmOneWayTags = {
         'tidal_channel': true
     }
 };
+export const osmOneWayBackwardTags = {
+    'conveying': {
+        'backward': true,
+    },
+    'oneway': {
+        '-1': true,
+    },
+};
+export const osmOneWayBiDirectionalTags = {
+    'conveying': {
+        'reversible': true,
+    },
+    'oneway': {
+        'alternating': true,
+        'reversible': true,
+    },
+};
+export const osmOneWayTags = merge(
+    osmOneWayForwardTags,
+    osmOneWayBackwardTags,
+    osmOneWayBiDirectionalTags,
+);
 
 // solid and smooth surfaces akin to the assumed default road surface in OSM
 export var osmPavedTags = {
@@ -231,6 +258,10 @@ export var osmRoutableHighwayTagValues = {
     unclassified: true, road: true, service: true, track: true, living_street: true, bus_guideway: true, busway: true,
     path: true, footway: true, cycleway: true, bridleway: true, pedestrian: true, corridor: true, steps: true, ladder: true
 };
+/** aeroway tags that are treated as routable for aircraft */
+export const osmRoutableAerowayTags = {
+    runway: true, taxiway: true
+};
 // "highway" tag values that generally do not allow motor vehicles
 export var osmPathHighwayTagValues = {
     path: true, footway: true, cycleway: true, bridleway: true, pedestrian: true, corridor: true, steps: true, ladder: true
@@ -245,7 +276,7 @@ export var osmRailwayTrackTagValues = {
 
 // "waterway" tag values for line features representing water flow
 export var osmFlowingWaterwayTagValues = {
-    canal: true, ditch: true, drain: true, fish_pass: true, river: true, stream: true, tidal_channel: true
+    canal: true, ditch: true, drain: true, fish_pass: true, flowline: true, river: true, stream: true, tidal_channel: true
 };
 
 // Tags which values should be considered case sensitive when offering tag suggestions

@@ -321,21 +321,25 @@ export function uiSectionRawTagEditor(id, context) {
     }
 
     function stringify(s) {
-        return JSON.stringify(s).slice(1, -1);   // without leading/trailing "
+        const stringified = JSON.stringify(s).slice(1, -1);   // without leading/trailing "
+        if (stringified !== s) {
+            return `"${stringified}"`;
+        } else {
+            return s;
+        }
     }
 
     function unstringify(s) {
-        var leading = '';
-        var trailing = '';
-        if (s.length < 1 || s.charAt(0) !== '"') {
-            leading = '"';
+        const isQuoted = s.length > 1 && s.charAt(0) === '"' && s.charAt(s.length - 1) === '"';
+        if (isQuoted) {
+            try {
+                return JSON.parse(s);
+            } catch {
+                return s;
+            }
+        } else {
+            return s;
         }
-        if (s.length < 2 || s.charAt(s.length - 1) !== '"' ||
-            (s.charAt(s.length - 1) === '"' && s.charAt(s.length - 2) === '\\')
-        ) {
-            trailing = '"';
-        }
-        return JSON.parse(leading + s + trailing);
     }
 
     function rowsToText(rows) {
@@ -368,7 +372,6 @@ export function uiSectionRawTagEditor(id, context) {
         });
 
         var tagDiff = utilTagDiff(_tags, newTags);
-        if (!tagDiff.length) return;
 
         _pendingChange  = _pendingChange || {};
 
@@ -387,6 +390,7 @@ export function uiSectionRawTagEditor(id, context) {
 
         if (Object.keys(_pendingChange).length === 0) {
             _pendingChange = null;
+            section.reRender();
             return;
         }
 

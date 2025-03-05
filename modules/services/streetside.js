@@ -16,7 +16,7 @@ import {
 import { utilAesDecrypt, utilArrayUnion, utilQsString, utilRebind, utilStringQs, utilTiler, utilUniqueDomId } from '../util';
 
 
-const streetsideApi = 'https://dev.virtualearth.net/REST/v1/Imagery/MetaData/Streetside?mapArea={bbox}&key={key}&count={count}';
+const streetsideApi = 'https://dev.virtualearth.net/REST/v1/Imagery/MetaData/Streetside?mapArea={bbox}&key={key}&count={count}&uriScheme=https';
 const maxResults = 500;
 const bubbleAppKey = utilAesDecrypt('5c875730b09c6b422433e807e1ff060b6536c791dbfffcffc4c6b18a1bdba1f14593d151adb50e19e1be1ab19aef813bf135d0f103475e5c724dec94389e45d0');
 const pannellumViewerCSS = 'pannellum/pannellum.css';
@@ -114,14 +114,17 @@ function loadNextTilePage(which, url, tile) {
       const bubbleId = bubble.imageUrl;
       if (cache.points[bubbleId]) return null;  // skip duplicates
 
-      const loc = [bubble.lon, bubble.lat];
+      // workaround for https://github.com/openstreetmap/iD/issues/10341#issuecomment-2275724738
+      const loc = [
+        bubble.lon || bubble.longitude,
+        bubble.lat || bubble.latitude
+      ];
       const d = {
         loc: loc,
         key: bubbleId,
-        imageUrl: bubble.imageUrl.replace('{subdomain}',
-          bubble.imageUrlSubdomains[0]
-        ),
-        ca: bubble.he,
+        imageUrl: bubble.imageUrl
+          .replace('{subdomain}', bubble.imageUrlSubdomains[0]),
+        ca: bubble.he || bubble.heading,
         captured_at: bubble.vintageEnd,
         captured_by: 'microsoft',
         pano: true,

@@ -121,7 +121,7 @@ function buildData() {
       });
     }).then(() =>
       // also fetch the bleeding edge data too to make sure we're always hosting the latest icons
-      fetch('https://raw.githubusercontent.com/openstreetmap/id-tagging-schema/main/interim/icons.json')
+      fetch('https://raw.githubusercontent.com/openstreetmap/id-tagging-schema/interim/icons.json')
     ).then(response => response.json()).then(cuttingEdgeIcons => {
       cuttingEdgeIcons
         .filter(icon => /^fa[srb]-/.test(icon))
@@ -186,7 +186,12 @@ function generateTerritoryLanguages() {
   // override/adjust some territory languages which are not included in CLDR data
   territoryLanguages.pk.push('pnb', 'scl', 'trw', 'kls'); // https://github.com/openstreetmap/iD/pull/9242
   lodash.pull(territoryLanguages.pk, 'pa-Arab', 'lah', 'tg-Arab'); // - " -
-  territoryLanguages.it.push('lld'); // https://en.wikipedia.org/wiki/Ladin_language
+  territoryLanguages.au = [
+     'en', 'aus', 'aer', 'aoi', 'bdy', 'coa', 'dgw', 'gjm', 'gjr', 'gup',
+    'jay', 'mwf', 'mwp', 'nys', 'pih', 'piu', 'pjt', 'rop', 'tcs', 'tiw',
+    'ulk', 'wbp', 'wrh', 'wth', 'wyi', 'xdk', 'xni', 'xph', 'xrd', 'zku'
+  ]; // https://github.com/openstreetmap/iD/pull/10684
+  territoryLanguages.nz.push('rrm'); // https://github.com/openstreetmap/iD/pull/10684
 
   return territoryLanguages;
 }
